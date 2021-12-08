@@ -58,8 +58,6 @@ class ScraperJob(object):
                 "phone_number": phone,
             }
             self.results.append(result_obj)
-        else:
-            print("Invalid: {}\t{}".format(phone, len(phone)))
 
     def process_url(self, url):
         """
