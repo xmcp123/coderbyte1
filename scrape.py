@@ -7,7 +7,7 @@ import json
 
 
 def is_valid_phone(phone):
-    return re.match(r"(\+[0-9]+\s*)?(\([0-9]+\))?[\s0-9\-]+[0-9]+", phone) and len(phone)==14
+    return re.match(r"(\+[0-9]+\s*)?(\([0-9]+\))?[\s0-9\-]+[0-9]+", phone) and len(phone)==12
 
 
 class ScraperJob(object):
@@ -46,6 +46,8 @@ class ScraperJob(object):
                 "phone_number": phone,
             }
             self.results.append(result_obj)
+        else:
+            print("Invalid: {}\t{}".format(phone, len(phone)))
 
     def process_url(self, url):
         self.visited_pages += 1
@@ -56,6 +58,7 @@ class ScraperJob(object):
             link = link.split("#")[0]
             if not link in self.used:
                 print("Found Link: {}".format(link))
+                self.used.add(link)
                 yield link
     def get_results(self):
         return self.results
@@ -63,8 +66,9 @@ class ScraperJob(object):
         self.queue = [url]
         index = 0
         while index < len(self.queue) and index < self.max_pages:
+            print("Processing page {}".format(self.queue[index]))
             for link in self.process_url(self.queue[index]):
-                if not link in self.queue:
+                if  link not in self.queue:
                     self.queue.append(link)
             index+=1
 
@@ -100,6 +104,4 @@ class ScrapedPage(object):
             yield match
 
 
-job = ScraperJob()
-job.scrape("https://nearme.vip/restaurant/us/pizza-restaurant/square-pie-guys-of-san-francisco/")
-print(json.dumps(job.results, indent=3))
+
