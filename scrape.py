@@ -7,7 +7,10 @@ import json
 
 
 def is_valid_phone(phone):
-    return re.match(r"(\+[0-9]+\s*)?(\([0-9]+\))?[\s0-9\-]+[0-9]+", phone) and len(phone)==12
+    return (
+        re.match(r"(\+[0-9]+\s*)?(\([0-9]+\))?[\s0-9\-]+[0-9]+", phone)
+        and len(phone) == 12
+    )
 
 
 class ScraperJob(object):
@@ -19,6 +22,7 @@ class ScraperJob(object):
         self.index = 0
         self.max_pages = max_pages
         self.visited_pages = 0
+
     def process_phone(self, phone):
         ph = None
         if not phone.startswith("+"):
@@ -60,17 +64,19 @@ class ScraperJob(object):
                 print("Found Link: {}".format(link))
                 self.used.add(link)
                 yield link
+
     def get_results(self):
         return self.results
+
     def scrape(self, url):
         self.queue = [url]
         index = 0
         while index < len(self.queue) and index < self.max_pages:
             print("Processing page {}".format(self.queue[index]))
             for link in self.process_url(self.queue[index]):
-                if  link not in self.queue:
+                if link not in self.queue:
                     self.queue.append(link)
-            index+=1
+            index += 1
 
 
 class ScrapedPage(object):
@@ -102,6 +108,3 @@ class ScrapedPage(object):
         compiled = re.compile(pattern)
         for match in re.findall(pattern, self.content):
             yield match
-
-
-
