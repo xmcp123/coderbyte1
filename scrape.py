@@ -61,7 +61,7 @@ class ScraperJob(object):
 
     def process_url(self, url):
         """
-        Scrape a url, add links
+        Scrape a url, add links, process phone numbers
         :param url:  string
         :return: None
         """
@@ -81,6 +81,11 @@ class ScraperJob(object):
         return self.results
 
     def scrape(self, url):
+        """
+        Begin the scraping of a URL
+        :param url: the url to scrape
+        :return:
+        """
         self.queue = [url]
         index = 0
         while index < len(self.queue) and index < self.max_pages:
@@ -89,6 +94,7 @@ class ScraperJob(object):
                 if link not in self.queue:
                     self.queue.append(link)
             index += 1
+        return self.get_results()
 
 
 class ScrapedPage(object):
@@ -96,6 +102,11 @@ class ScrapedPage(object):
         self.url, self.status_code, self.content = self.get_url(url)
 
     def get_url(self, url):
+        """
+        Retrieve a URL
+        :param url: string
+        :return: touple (url, status_code, text)
+        """
         sess = requests.Session()
         useragent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36"
         headers = {"User-agent": useragent}
@@ -103,6 +114,11 @@ class ScrapedPage(object):
         return result.url, result.status_code, result.text
 
     def fix_url(self, link):
+        """
+        Make relative links absolute, or return an alredy absolute url
+        :param link: url
+        :return: string
+        """
         init_url = self.url
         if link.lower().startswith("http://") or link.startswith("https://"):
             return link
@@ -110,13 +126,20 @@ class ScrapedPage(object):
             return requests.compat.urljoin(init_url, link)
 
     def get_links(self):
+        """
+        Extract links from the processed page
+        :return: absolute url
+        """
         soup = BeautifulSoup(self.content, "lxml")
         for link in soup.find_all("a"):
             if link.has_attr("href"):
                 yield self.fix_url(link["href"])
 
     def get_phone_numbers(self):
+        """
+        Extract phone numbers from the page. Validation occurs later
+        :return: string (phone number)
+        """
         pattern = r"(\d{3}[-\.\s]\d{3}[-\.\s]\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]\d{4}|\d{3}[-\.\s]\d{4})"
-        compiled = re.compile(pattern)
         for match in re.findall(pattern, self.content):
             yield match
