@@ -3,10 +3,14 @@ import re
 import phonenumbers
 from bs4 import BeautifulSoup, SoupStrainer
 from phonenumbers import carrier, timezone, geocoder
-import json
 
 
 def is_valid_phone(phone):
+    """
+    The real phone number validation is too good for the example url. This will validate phone numbers that aren't really valid
+    :param phone: str international phone number format
+    :return: boolean
+    """
     return (
         re.match(r"(\+[0-9]+\s*)?(\([0-9]+\))?[\s0-9\-]+[0-9]+", phone)
         and len(phone) == 12
@@ -16,7 +20,6 @@ def is_valid_phone(phone):
 class ScraperJob(object):
     def __init__(self, max_pages=10):
 
-        self.used = set()
         self.phone_numbers = set()
         self.results = []
         self.index = 0
@@ -24,6 +27,11 @@ class ScraperJob(object):
         self.visited_pages = 0
 
     def process_phone(self, phone):
+        """
+        Validate and extract phone numbers
+        :param phone: the phone number
+        :return: None
+        """
         ph = None
         if not phone.startswith("+"):
             ph = phonenumbers.parse(phone, "US")
@@ -54,18 +62,24 @@ class ScraperJob(object):
             print("Invalid: {}\t{}".format(phone, len(phone)))
 
     def process_url(self, url):
+        """
+        Scrape a url, add links
+        :param url:  string
+        :return: None
+        """
         self.visited_pages += 1
         page = ScrapedPage(url)
         for phone in page.get_phone_numbers():
             self.process_phone(phone)
         for link in page.get_links():
             link = link.split("#")[0]
-            if not link in self.used:
-                print("Found Link: {}".format(link))
-                self.used.add(link)
-                yield link
+            yield link
 
     def get_results(self):
+        """
+        Retrieve the results object
+        :return:  dict
+        """
         return self.results
 
     def scrape(self, url):
