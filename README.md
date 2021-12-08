@@ -6,7 +6,7 @@
 \/    |_| |_|\___/|_| |_|\___\__/\___|_|  \__,_| .__/ \___|_|   
                                                |_|                                        
 ```
-Scrape a URL, extract phone numbers, attempt to get carrier(if db is available) and time zones.
+Scrape a URL, extract phone numbers and time zones.
 
 Usage:
 `python run.py -u http://www.url.com -m 30`

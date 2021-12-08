@@ -4,6 +4,8 @@ import phonenumbers
 from bs4 import BeautifulSoup, SoupStrainer
 from phonenumbers import carrier, timezone, geocoder
 
+phonenumbers.PhoneMetadata.load_all()
+
 
 def is_valid_phone(phone):
     """
@@ -43,7 +45,6 @@ class ScraperJob(object):
         if phonenumbers.is_valid_number(ph) and phone not in self.phone_numbers:
             self.phone_numbers.add(phone)
             result_obj = {
-                "carrier": carrier.name_for_number(ph, "en"),
                 "timezone": timezone.time_zones_for_number(ph),
                 "phone_number": phone,
             }
@@ -53,7 +54,6 @@ class ScraperJob(object):
         ):  # edgecase because the sample url does not actually use a valid phone number.
             self.phone_numbers.add(phone)
             result_obj = {
-                "carrier": "Fake Carrier",
                 "timezone": "Fake Timezone",
                 "phone_number": phone,
             }
