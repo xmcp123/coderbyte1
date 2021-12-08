@@ -10,5 +10,11 @@ $$ |      $$ |  $$ |\$$$$$$  |$$ |  $$ |\$$$$$$$\ \$$$$$$  |\$$$$$$$\ $$ |     \
                                                                                          $$ |                          
                                                                                          $$ |                                                                                                                 \__|                          
 ```
+Scrape a URL, extract phone numbers, attempt to get carrier(if db is available) and time zones.
+
 Usage:
-`python run.py -u http://www.url.com`
+`python run.py -u http://www.url.com -m 30`
+
+-u or --url is the URL to scrape
+
+-m or --max is the maximum number of pages
