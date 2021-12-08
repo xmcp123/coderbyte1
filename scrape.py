@@ -4,8 +4,6 @@ import phonenumbers
 from bs4 import BeautifulSoup, SoupStrainer
 from phonenumbers import carrier, timezone, geocoder
 
-phonenumbers.PhoneMetadata.load_all()
-
 
 def is_valid_phone(phone):
     """
